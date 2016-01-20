@@ -1,0 +1,124 @@
+<?php
+
+use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Utility\Xss;    
+
+
+/**
+ * Implements hook_field_formatter_third_party_settings_form().
+ */
+function pinto_field_formatter_third_party_settings_form(\Drupal\Core\Field\FormatterInterface $plugin, \Drupal\Core\Field\FieldDefinitionInterface $field_definition, $view_mode, $form, $form_state) {
+$element = array();
+    if ($plugin->getPluginId() == 'pinto') {
+   
+   
+   
+   
+   
+        $default_x = (!empty($plugin->getThirdPartySetting('pinto', 'marginx')) ? $default_x = $plugin->getThirdPartySetting('pinto', 'marginx') : $default_x = 10);
+        $default_y = (!empty($plugin->getThirdPartySetting('pinto', 'marginy')) ? $default_y = $plugin->getThirdPartySetting('pinto', 'marginy') : $default_y = 10);
+  
+  $element['marginx'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Margin X'),
+    '#default_value' => $default_x,
+  );
+  $element['marginy'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Margin Y'),
+    '#default_value' => $default_y,
+  );
+}
+  return $element;
+}
+
+
+/**
+ * Implements hook_field_formatter_settings_summary_alter().
+ */
+function pinto_field_formatter_settings_summary_alter(&$summary, $context) {
+ //dpm($context['formatter']);
+if ($context['formatter']->getPluginId() == 'pinto') {
+    
+  // if (!empty($context['formatter']->getThirdPartySetting('pinto', 'marginx')) {
+   
+   $marginx_setting = $context['formatter']->getThirdPartySetting('pinto', 'marginx');
+ //  } else {
+   //$marginx_setting = 10;
+   //}
+   Drupal::state()->set('marginx', $marginx_setting);
+    
+    
+//if (!empty($context['formatter']->getThirdPartySetting('pinto', 'marginy')) {
+   
+   $marginy_setting = $context['formatter']->getThirdPartySetting('pinto', 'marginy');
+  // } else {
+   //$marginy_setting = 10;
+   //}
+   Drupal::state()->set('marginy', $marginy_setting);
+    
+if (!empty($marginx_setting)) {
+    $summary[] = t('Margin X: @marginx', array('@marginx' => Xss::filter($marginx_setting, array())));
+}
+if (!empty($marginy_setting)) {
+    $summary[] = t('Margin Y: @marginy', array('@marginy' => Xss::filter($marginy_setting, array())));
+}
+}
+}
+
+
+
+
+/**
+ * Implements hook_theme().
+ */
+function pinto_theme() {
+  return array(
+    'pinto_formatter' => array(
+      'variables' => array('item' => NULL, 'item_attributes' => NULL, 'url' => NULL, 'image_style' => NULL),
+    ),
+    
+  );
+}
+
+/**
+ * Implements template_preprocess_image_style().
+ */
+function pinto_preprocess_image_style(&$variables){
+    Drupal::state()->set('img_width', $variables ['image']['#width']);
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function pinto_page_attachments_alter(&$page) {
+    $page['#attached']['library'][] = 'pinto/pinto.pintojs';
+    $page['#attached']['drupalSettings']['pinto']['width'] = Drupal::state()->get('img_width');
+    $page['#attached']['drupalSettings']['pinto']['marginx'] = Drupal::state()->get('marginx');
+    $page['#attached']['drupalSettings']['pinto']['marginy'] = Drupal::state()->get('marginy');
+}
+
+/**
+ * Implements template_preprocess_pinto_formatter().
+ */
+function template_preprocess_pinto_formatter(&$vars) {
+    template_preprocess_image_formatter($vars);
+    $vars['pinto_caption'] = SafeMarkup::checkPlain($vars['item']->get('alt')->getValue());
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ */
+function pinto_preprocess_field(&$variables) {
+  $render_display = EntityViewDisplay::collectRenderDisplay($variables['element']['#object'], $variables['element']['#view_mode']);
+  $field_display = $render_display->getComponent($variables['element']['#field_name']);
+   
+  if ($field_display['type'] == "pinto") {
+        $variables['content_attributes']['class'][] = 'pinto-container';
+  }
+}
+
+
+

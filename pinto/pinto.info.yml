@@ -1,0 +1,7 @@
+name: 'Pinto JS Imagefield Integration'
+description: 'Pinto JS Imagefield formatter.'
+package: Field Formatters
+dependencies:
+ - field
+core: 8.x
+type: module

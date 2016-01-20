@@ -1,0 +1,11 @@
+pinto.pintojs:
+  version: 1.0.0
+  css:
+    component:
+      css/pinto.css: {}
+  js:
+    js/pinto.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

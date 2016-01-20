@@ -1,0 +1,15 @@
+.pinto-container {
+		width: 100%!important;
+		margin: auto;
+    }
+    .pinto-container > div {
+		-webkit-box-shadow: 0 4px 15px -5px #555;
+		box-shadow: 0 4px 15px -5px #555;
+		background-color: #fff;
+		padding:2px;
+		margin:5px;
+	}
+	.pinto-container > div img {
+		padding: 0px;
+		display: block;
+	}

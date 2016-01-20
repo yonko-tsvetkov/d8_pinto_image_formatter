@@ -1,0 +1,11 @@
+pinto.settings:
+  type: mapping
+  label: 'Pinto JS settings'
+  mapping:
+    marginx:
+      type: integer
+      label: 'width spacing between blocks in pixels'
+    marginy:
+      type: integer
+      label: 'height spacing between blocks in pixels'
+    
